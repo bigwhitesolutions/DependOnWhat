@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DependOnWhat.Console": {
+      "commandName": "Project",
+      "workingDirectory": "Path To Project"
+    }
+  }
+}

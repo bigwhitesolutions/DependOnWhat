@@ -5,7 +5,8 @@ using DependOnWhat.Nuget;
 
 var allDependancies = PackageFinder.GetPackages(Directory.GetFiles(Directory.GetCurrentDirectory(), "*.csproj", SearchOption.AllDirectories));
 
-var dependabotConfig = DependabotParser.ParseYaml(File.ReadAllText(Directory.GetFiles(Directory.GetCurrentDirectory(), ".dependabot", SearchOption.AllDirectories).Single()));
+var dependabotFiles = Directory.GetFiles(Directory.GetCurrentDirectory(), "dependabot.yml", SearchOption.AllDirectories);
+var dependabotConfig = DependabotParser.ParseYaml(File.ReadAllText(dependabotFiles.First()));
 
 var nugetVersions = await Nuget.GetVersionsForPackages(allDependancies.Select(x => x.Name));
 

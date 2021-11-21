@@ -1,20 +1,31 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<PackAsTool>true</PackAsTool>
+		<ToolCommandName>dependonwhat</ToolCommandName>
+		<PackageVersion>1.0.0-preview2</PackageVersion>
+		<Authors>Shaun Pearson</Authors>
+		<Company>Big White Solutions</Company>
+		<RepositoryType>git</RepositoryType>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<RepositoryUrl>https://github.com/bigwhitesolutions/DependOnWhat</RepositoryUrl>
+		<PackageId>DependOnWhat</PackageId>
 
-  <ItemGroup>
-    <PackageReference Include="Spectre.Console" Version="0.42.0" />
-  </ItemGroup>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\DependOnWhat.Dependabot\DependOnWhat.Dependabot.csproj" />
-    <ProjectReference Include="..\DependOnWhat.Nuget\DependOnWhat.Nuget.csproj" />
-    <ProjectReference Include="..\DependOnWhat.PackageFinder\DependOnWhat.PackageFinder.csproj" />
-  </ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Spectre.Console" Version="0.42.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\DependOnWhat.Dependabot\DependOnWhat.Dependabot.csproj" />
+		<ProjectReference Include="..\DependOnWhat.Nuget\DependOnWhat.Nuget.csproj" />
+		<ProjectReference Include="..\DependOnWhat.PackageFinder\DependOnWhat.PackageFinder.csproj" />
+	</ItemGroup>
 
 </Project>

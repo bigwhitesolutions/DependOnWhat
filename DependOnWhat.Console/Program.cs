@@ -1,30 +1,37 @@
 ﻿using Spectre.Console;
 using DependOnWhat.Dependabot;
 using DependOnWhat.PackageFinder;
+using Microsoft.Extensions.DependencyInjection;
 using DependOnWhat.Nuget;
 
-var allDependancies = PackageFinder.GetPackages(Directory.GetFiles(Directory.GetCurrentDirectory(), "*.csproj", SearchOption.AllDirectories));
+List<AnalyzedProject>? AnalyzedProjects = null;
+using (var services = new ServiceCollection().AddPackageFinderServices().BuildServiceProvider())
+{
+    var packageProvider = services.GetService<IFullPackageProvider>()!;
+    AnalyzedProjects = await packageProvider.GetProjects();
+}
 
 var dependabotFiles = Directory.GetFiles(Directory.GetCurrentDirectory(), "dependabot.yml", SearchOption.AllDirectories);
 var dependabotConfig = DependabotParser.ParseYaml(File.ReadAllText(dependabotFiles.First()));
 
-var nugetVersions = await Nuget.GetVersionsForPackages(allDependancies.Select(x => x.Name));
+var allDependancies = AnalyzedProjects.SelectMany(project => project.TargetFrameworks.First().Dependencies);
 
 var table = new Table();
 table.AddColumns("Name", "Current", "latest");
 
-foreach (var dependancy in allDependancies.OrderBy(x => x.Name))
+foreach (var dependancy in allDependancies.OrderBy(x => x.Name).DistinctBy(x => new { x.Name, x.ResolvedVersion } ))
 {
     var versionsToIgnore = dependabotConfig.GetVersionsToIgnore(dependancy.Name);
-    var latest = nugetVersions.Filter(dependancy.Name, versionsToIgnore.FirstOrDefault()).Latest();
+    var resolved = dependancy.ResolvedVersion;
+    var latest = dependancy.AllVersions.Filter(versionsToIgnore.FirstOrDefault()).Latest();
 
     var func = (string _) => new Markup("");
 
-    if (dependancy.Version == null)
+    if (resolved == null)
     {
         func = (string s) => new Markup($"[yellow]{s}[/]");
     }
-    else if (dependancy.Version != latest?.OriginalVersion)
+    else if (resolved != latest)
     {
         func = (string s) => new Markup($"[red]{s}[/]");
     }
@@ -32,7 +39,7 @@ foreach (var dependancy in allDependancies.OrderBy(x => x.Name))
     {
         continue;
     }
-    table.AddRow(func(dependancy.Name), func(dependancy.Version ?? ""), func(latest?.OriginalVersion ?? ""));
+    table.AddRow(func(dependancy.Name), func(resolved?.OriginalVersion ?? ""), func(latest?.OriginalVersion ?? ""));
 }
 
 AnsiConsole.Write(table);

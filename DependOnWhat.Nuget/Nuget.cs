@@ -52,6 +52,16 @@ public static class Nuget
         LessThanOrEqual,
     }
 
+    public static IEnumerable<NuGetVersion> Filter(this IEnumerable<NuGetVersion> nugetVersions, string? versionsToIgnore = null)
+    {
+        if (string.IsNullOrWhiteSpace(versionsToIgnore))
+        {
+            return nugetVersions;
+        }
+        var (op, version) = ParseVersion(versionsToIgnore);
+        return Filter(nugetVersions, op, version);
+    }
+
     public static IEnumerable<NuGetVersion> Filter(this Dictionary<string, IEnumerable<NuGetVersion>> nugetVersions, string dependancyName, string? versionsToIgnore = null)
     {
         if (string.IsNullOrWhiteSpace(versionsToIgnore))
